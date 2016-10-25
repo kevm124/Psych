@@ -8,6 +8,8 @@ import javax.swing.*;
  * Created by Chris Nitta on 10/19/2016.
  */
 public class FoilMakerStarterGUI extends JFrame {
+    private String userToken;
+    private String gameToken;
     Server s = new Server();
     /*Main panel */
     JPanel mainPanel = new JPanel();
@@ -61,8 +63,25 @@ public class FoilMakerStarterGUI extends JFrame {
                 String username = enterUsername.getText();
                 char[] charPassword = enterPassword.getPassword();
                 String password = String.valueOf(charPassword);
-                s.login(username,password);
-                layout.show(mainPanel, "Start or Join");
+                String serverMessage = s.login(username, password);
+                System.out.println(serverMessage);
+                if (serverMessage.equals("RESPONSE--LOIN--INVALIDMESSAGEFORMAT--LOGIN--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if(serverMessage.equals("RESPONSE--LOGIN--UNKNOWNUSER--LOGIN--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if(serverMessage.equals("RESPONSE--LOGIN--INVALIDUSERPASSWORD--LOGIN--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if(serverMessage.equals("RESPONSE--LOGIN--USERALREADYLOGGEDIN--LOGIN--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    int lastDash = serverMessage.lastIndexOf('-');
+                    userToken = serverMessage.substring(lastDash + 1, serverMessage.length());
+                    layout.show(mainPanel, "Start or Join");
+                }
             }
         });
         /*Register button action listener*/
@@ -72,23 +91,39 @@ public class FoilMakerStarterGUI extends JFrame {
                 String username = enterUsername.getText();
                 char[] charPassword = enterPassword.getPassword();
                 String password = String.valueOf(charPassword);
-                s.register(username, password);
+                String serverMessage = s.register(username,password);
+                if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDMESSAGEFORMAT--CREATENEWUSERR--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERNAME--CREATENEWUSER--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERPASSWORD--CREATENEWUSER--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--USERALREADYEXISTS--CREATENEWUSER--" + username + "--" + password)) {
+                    JOptionPane.showMessageDialog(null,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "User created successfully","Success",JOptionPane.PLAIN_MESSAGE);
             }
         });
         /*Start Game action Listener*/
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                String serverMessage = s.startGame(userToken);
+                int lastDash = serverMessage.lastIndexOf('-');
+                gameToken = serverMessage.substring(lastDash + 1, serverMessage.length());
             }
         });
         /*Join Game action Listener*/
         joinButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                s.joinGame(userToken,gameToken);
             }
-        });
+        } );
 
         add(mainPanel);
 
