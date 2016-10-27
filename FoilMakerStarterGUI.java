@@ -58,9 +58,7 @@ public class FoilMakerStarterGUI {
     JPanel guessPanel = new JPanel();
     JTextField guess = new JTextField(10);
     JButton sendButton = new JButton("Submit");
-    /*
-        8=========================================================================================================D
-    */
+
     //Second Panel where user selects guess
     JLabel answerTitle = new JLabel();
     JPanel answerPanel = new JPanel();
@@ -68,7 +66,7 @@ public class FoilMakerStarterGUI {
     String[] optionsNames;
     JButton buttonSecond = new JButton("Send Guess");
     String answer;
-    //fdsa;khdsaklfj;dsalkfjas;lkdjf;lkdsajf;lkdsajf;lkdsajflkdsajf;lkdsajfa;lkdsjfaslkdjfsa;lkdjfsad;lkjfas;djfasdklfja;ldskj
+
     //Leader Gui
     JPanel main = new JPanel();
     JPanel leader = new JPanel();
@@ -186,10 +184,7 @@ public class FoilMakerStarterGUI {
         frame.setLocation(0,0);
         frame.setMinimumSize(new Dimension(350,300));
         frame.setResizable(false);
-        /*
-        ( ͡° ͜ʖ ͡° )
-        */
-        
+
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         layout.show(mainPanel, "Login or Register");
         frame.setTitle("FoilMaker");
