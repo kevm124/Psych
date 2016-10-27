@@ -68,7 +68,7 @@ public class FoilMakerStarterGUI {
     String[] optionsNames;
     JButton buttonSecond = new JButton("Send Guess");
     String answer;
-
+    //fdsa;khdsaklfj;dsalkfjas;lkdjf;lkdsajf;lkdsajf;lkdsajflkdsajf;lkdsajfa;lkdsjfaslkdjfsa;lkdjfsad;lkjfas;djfasdklfja;ldskj
     //Leader Gui
     JPanel main = new JPanel();
     JPanel leader = new JPanel();
