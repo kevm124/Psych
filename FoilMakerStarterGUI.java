@@ -58,7 +58,9 @@ public class FoilMakerStarterGUI {
     JPanel guessPanel = new JPanel();
     JTextField guess = new JTextField(10);
     JButton sendButton = new JButton("Submit");
-
+    /*
+        8=========================================================================================================D
+    */
     //Second Panel where user selects guess
     JLabel answerTitle = new JLabel();
     JPanel answerPanel = new JPanel();
