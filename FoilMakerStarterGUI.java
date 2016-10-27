@@ -13,7 +13,7 @@ import javax.swing.event.DocumentListener;
  */
 public class FoilMakerStarterGUI {
     public String[] options = {"lick","me"};
-    public String[] players;
+    public String[] players = {"penis"};
     private String userToken;
     private String gameToken;
     JFrame frame = new JFrame();
@@ -50,8 +50,7 @@ public class FoilMakerStarterGUI {
     JTextField token = new JTextField(3);
     JButton joinGameToken = new JButton("Join Game");
 
-    /*Frame where user enters suggestion*/
-    JFrame guessFrame = new JFrame();
+    /*Panel where user enters suggestion*/
     JPanel panelFirst = new JPanel();
     JLabel firstPanelHeader = new JLabel("What is the word for");
     JPanel wordPanel = new JPanel();
@@ -60,10 +59,9 @@ public class FoilMakerStarterGUI {
     JTextField guess = new JTextField(10);
     JButton sendButton = new JButton("Submit");
 
-    //Second Frame where user selects guess
+    //Second Panel where user selects guess
     JLabel answerTitle = new JLabel();
-    JFrame answerFrame = new JFrame();
-    JPanel panelSecond = new JPanel();
+    JPanel answerPanel = new JPanel();
     JPanel optionPanel = new JPanel();
     String[] optionsNames;
     JButton buttonSecond = new JButton("Send Guess");
@@ -129,12 +127,7 @@ public class FoilMakerStarterGUI {
         sendButton.setEnabled(false);
         panelFirst.setBackground(Color.cyan);
 
-        guessFrame.add(panelFirst);
-        guessFrame.setDefaultCloseOperation(guessFrame.DISPOSE_ON_CLOSE);
-        guessFrame.setSize(500,300);
-        guessFrame.setVisible(true);
-
-        panelSecond.add(answerTitle);
+        answerPanel.add(answerTitle);
         optionsNames = options; //Insert response from server
         JButton[] optionButtons = new JButton[optionsNames.length];
         for (int i =0; i < optionsNames.length; i++) {
@@ -148,13 +141,9 @@ public class FoilMakerStarterGUI {
             optionPanel.add(btn);
             optionButtons[i] = btn;
         }
-        panelSecond.add(optionPanel);
-        panelSecond.add(buttonSecond);
-        panelSecond.setBackground(Color.DARK_GRAY);
-
-        answerFrame.add(panelSecond);
-        answerFrame.setDefaultCloseOperation(answerFrame.DISPOSE_ON_CLOSE);
-        answerFrame.setSize(500,300);
+        answerPanel.add(optionPanel);
+        answerPanel.add(buttonSecond);
+        answerPanel.setBackground(Color.DARK_GRAY);
 
         //Leader Gui Stuff
         gameKeyText.setEditable(false);
@@ -185,6 +174,8 @@ public class FoilMakerStarterGUI {
         mainPanel.add(waitingPanel, "Waiting for leader");
         mainPanel.add(enterTokenPanel, "Enter Token");
         mainPanel.add(resultsPanel, "Results");
+        mainPanel.add(answerPanel, "Answers");
+        mainPanel.add(panelFirst, "Guess");
 
         frame.setTitle("FoilMaker");
         frame.add(mainPanel);
@@ -282,8 +273,8 @@ public class FoilMakerStarterGUI {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guessFrame.setVisible(false);
-                answerFrame.setVisible(true);
+                panelFirst.setVisible(false);
+                answerPanel.setVisible(true);
                 System.out.println(guess.getText());
             }
         });
