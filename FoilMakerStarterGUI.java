@@ -186,7 +186,10 @@ public class FoilMakerStarterGUI {
         frame.setLocation(0,0);
         frame.setMinimumSize(new Dimension(350,300));
         frame.setResizable(false);
-
+        /*
+        ( ͡° ͜ʖ ͡° )
+        */
+        
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         layout.show(mainPanel, "Login or Register");
         frame.setTitle("FoilMaker");
