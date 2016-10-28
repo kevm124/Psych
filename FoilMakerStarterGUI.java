@@ -197,26 +197,27 @@ public class FoilMakerStarterGUI {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ServerResponseReader reader = new ServerResponseReader();
                 String username = enterUsername.getText();
                 char[] charPassword = enterPassword.getPassword();
                 String password = String.valueOf(charPassword);
                 String serverMessage = s.login(username, password);
                 System.out.println(serverMessage);
-                if (serverMessage.equals("RESPONSE--LOIN--INVALIDMESSAGEFORMAT--LOGIN--" + username + "--" + password)) {
+                if (reader.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--UNKNOWNUSER--LOGIN--" + username + "--" + password)) {
+                else if(reader.getCommandStatus(serverMessage).equals("UNKNOWNUSER")) {
                     JOptionPane.showMessageDialog(null,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--INVALIDUSERPASSWORD--LOGIN--" + username + "--" + password)) {
+                else if(reader.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
                     JOptionPane.showMessageDialog(null,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--USERALREADYLOGGEDIN--LOGIN--" + username + "--" + password)) {
+                else if(reader.getCommandStatus(serverMessage).equals("USERALREADYLOGGEDIN")) {
                     JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     int lastDash = serverMessage.lastIndexOf('-');
-                    userToken = serverMessage.substring(lastDash + 1, serverMessage.length());
+                    userToken = reader.getSessionCookie(serverMessage);
                     layout.show(mainPanel, "Start or Join");
                 }
             }
@@ -225,20 +226,22 @@ public class FoilMakerStarterGUI {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ServerResponseReader reader = new ServerResponseReader();
                 String username = enterUsername.getText();
-                char[] charPassword = enterPassword.getPassword();
-                String password = String.valueOf(charPassword);
+                //char[] charPassword = enterPassword.getPassword();
+                //String password = String.valueOf(charPassword);  //Could be done in one line like below
+                String password = String.valueOf(enterPassword.getPassword());
                 String serverMessage = s.register(username,password);
-                if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDMESSAGEFORMAT--CREATENEWUSERR--" + username + "--" + password)) {
+                if (reader.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERNAME--CREATENEWUSER--" + username + "--" + password)) {
+                else if (reader.getCommandStatus(serverMessage).equals("INVALIDUSERNAME")) {
                     JOptionPane.showMessageDialog(null,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERPASSWORD--CREATENEWUSER--" + username + "--" + password)) {
+                else if (reader.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
                     JOptionPane.showMessageDialog(null,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--USERALREADYEXISTS--CREATENEWUSER--" + username + "--" + password)) {
+                else if (reader.getCommandStatus(serverMessage).equals("USERALREADYEXISTS")) {
                     JOptionPane.showMessageDialog(null,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else
@@ -247,11 +250,12 @@ public class FoilMakerStarterGUI {
         });
         /*Start Game action Listener*/
         startButton.addActionListener(new ActionListener() {
+            ServerResponseReader reader = new ServerResponseReader();
             @Override
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.startGame(userToken);
-                int lastDash = serverMessage.lastIndexOf('-');
-                gameToken = serverMessage.substring(lastDash + 1, serverMessage.length());
+                //int lastDash = serverMessage.lastIndexOf('-');
+                gameToken = reader.getGameToken(serverMessage);
             }
         });
         /*Join Game action Listener*/
