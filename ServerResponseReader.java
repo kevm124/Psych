@@ -1,3 +1,4 @@
+package Psych;
 import java.util.ArrayList;
 
 /*
@@ -8,18 +9,19 @@ public class ServerResponseReader {
     public ServerResponseReader(){}
 
     /*
-    * Returns status of the command from server's
-    * response message
-     */
-    public String getCommandStatus(String message){
-        return message.substring(message.indexOf('-', 10) + 2);
-    }
-
-    /*
     * Returns command title from server's response message
      */
     public String getCommand(String message){
         return message.substring(message.indexOf('-') + 2, message.indexOf('-', 10));
+    }
+
+    /*
+    * Returns status of the command from server's
+    * response message
+     */
+    public String getCommandStatus(String message){
+        int commandSize = getCommand(message).length();
+        return message.substring(message.indexOf('-', 10) + 2, message.indexOf('-', commandSize + 13));
     }
 
     /*
@@ -121,14 +123,13 @@ public class ServerResponseReader {
 
     public static void main(String [] args){
         ServerResponseReader r = new ServerResponseReader();
-        String msg = "ROUNDRESULT--Bob--You were fooled by Alice.--0--0--1--Alice--You got it right!. You " +
-                "fooled Bob.--15--1--0";
-                //"NEWPARTICIPANT--Alice--0";
-                //"RESPONSE--STARTNEWGAME-SUCCESS--ypw";
-                //"NEWGAMEWORD--A group of zebras--a dazzle";
-                //"ROUNDOPTIONS--A zippy do--A zig zag--A dazzle";
-        String [] o = r.getRoundResults(msg);//r.getRoundOptions(msg);
-        for(int i = 0; i < o.length; i++)
-            System.out.println(o[i]);
+        String username = "Chris";
+        String password = "chris123";
+        String msg = "RESPONSE--CREATENEWUSER--INVALIDMESSAGEFORMAT--CREATENEWUSER--" + username + "--" + password;
+        //"NEWPARTICIPANT--Alice--0";
+        //"RESPONSE--STARTNEWGAME-SUCCESS--ypw";
+        //"NEWGAMEWORD--A group of zebras--a dazzle";
+        //"ROUNDOPTIONS--A zippy do--A zig zag--A dazzle";
+        System.out.println(r.getCommandStatus( msg));
     }
 }

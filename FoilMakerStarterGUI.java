@@ -11,7 +11,9 @@ import javax.swing.event.DocumentListener;
 /**
  * Created by Chris Nitta on 10/19/2016.
  */
+
 public class FoilMakerStarterGUI {
+    ServerResponseReader r = new ServerResponseReader();
     public String[] options = {"lick","me"};
     public String[] players = {"penis"};
     private String userToken;
@@ -23,7 +25,6 @@ public class FoilMakerStarterGUI {
     /*Main panel */
     JPanel mainPanel = new JPanel();
     CardLayout layout = new CardLayout();
-    BoxLayout boxlayout = new BoxLayout(frame.getContentPane(), 1);
 
     /*Login or Register Panel*/
     JPanel loginPanel = new JPanel();
@@ -70,10 +71,8 @@ public class FoilMakerStarterGUI {
     //Leader Gui
     JPanel main = new JPanel();
     JPanel leader = new JPanel();
-
     JLabel label2 = new JLabel("Others should use this key to join your game");
-    JTextArea gameKeyText = new JTextArea("Insert game key here");
-
+    JTextArea gameKeyText = new JTextArea(gameToken);
     JPanel playerPanel = new JPanel();
     JTextArea playersInGame = new JTextArea();
     JButton startButton2 = new JButton("Start Game");
@@ -176,10 +175,10 @@ public class FoilMakerStarterGUI {
         mainPanel.add(resultsPanel, "Results");
         mainPanel.add(answerPanel, "Answers");
         mainPanel.add(panelFirst, "Guess");
+        mainPanel.add(main, "Leader");
 
         frame.setTitle("FoilMaker");
         frame.add(mainPanel);
-        frame.add(main);
 
         frame.setLocation(0,0);
         frame.setMinimumSize(new Dimension(350,300));
@@ -202,21 +201,20 @@ public class FoilMakerStarterGUI {
                 String password = String.valueOf(charPassword);
                 String serverMessage = s.login(username, password);
                 System.out.println(serverMessage);
-                if (serverMessage.equals("RESPONSE--LOIN--INVALIDMESSAGEFORMAT--LOGIN--" + username + "--" + password)) {
+                if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--UNKNOWNUSER--LOGIN--" + username + "--" + password)) {
+                else if(r.getCommandStatus(serverMessage).equals("UNKNOWNUSER")) {
                     JOptionPane.showMessageDialog(null,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--INVALIDUSERPASSWORD--LOGIN--" + username + "--" + password)) {
+                else if(r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
                     JOptionPane.showMessageDialog(null,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if(serverMessage.equals("RESPONSE--LOGIN--USERALREADYLOGGEDIN--LOGIN--" + username + "--" + password)) {
+                else if(r.getCommandStatus(serverMessage).equals("USERALREADYLOGGEDIN")) {
                     JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    int lastDash = serverMessage.lastIndexOf('-');
-                    userToken = serverMessage.substring(lastDash + 1, serverMessage.length());
+                    userToken = r.getSessionCookie(serverMessage);
                     layout.show(mainPanel, "Start or Join");
                 }
             }
@@ -229,16 +227,16 @@ public class FoilMakerStarterGUI {
                 char[] charPassword = enterPassword.getPassword();
                 String password = String.valueOf(charPassword);
                 String serverMessage = s.register(username,password);
-                if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDMESSAGEFORMAT--CREATENEWUSERR--" + username + "--" + password)) {
+                if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERNAME--CREATENEWUSER--" + username + "--" + password)) {
+                else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERNAME")) {
                     JOptionPane.showMessageDialog(null,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--INVALIDUSERPASSWORD--CREATENEWUSER--" + username + "--" + password)) {
+                else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
                     JOptionPane.showMessageDialog(null,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
-                else if (serverMessage.equals("RESPONSE--CREATENEWUSER--USERALREADYEXISTS--CREATENEWUSER--" + username + "--" + password)) {
+                else if (r.getCommandStatus(serverMessage).equals("USERALREADYEXISTS")) {
                     JOptionPane.showMessageDialog(null,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else
@@ -250,8 +248,16 @@ public class FoilMakerStarterGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.startGame(userToken);
-                int lastDash = serverMessage.lastIndexOf('-');
-                gameToken = serverMessage.substring(lastDash + 1, serverMessage.length());
+                if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
+                    JOptionPane.showMessageDialog(null,"Invalid user Token","Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (r.getCommandStatus(serverMessage).equals("FAILURE")) {
+                    JOptionPane.showMessageDialog(null,"User already playing or server failed to create a game session due to an internal error","error",JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    gameToken = r.getGameToken(serverMessage);
+                    layout.show(mainPanel,"Enter Token");
+                }
             }
         });
         /*Join Game action Listener*/
@@ -261,21 +267,12 @@ public class FoilMakerStarterGUI {
                 s.joinGame(userToken,gameToken);
             }
         } );
-        /*Test button action listener*/
-        test.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                layout.show(mainPanel,"Results");
-            }
-        });
 
         //Add action listener to button 1 on panel first
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panelFirst.setVisible(false);
-                answerPanel.setVisible(true);
-                System.out.println(guess.getText());
+
             }
         });
 
