@@ -3,6 +3,8 @@ package Psych;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
@@ -13,11 +15,8 @@ import javax.swing.event.DocumentListener;
  */
 
 public class FoilMakerStarterGUI {
+    FoilMakerModel m = new FoilMakerModel();
     ServerResponseReader r = new ServerResponseReader();
-    public String[] options = {"lick","me"};
-    public String[] players = {"penis"};
-    private String userToken;
-    private String gameToken;
     JFrame frame = new JFrame();
     Server s = new Server();
     JButton test = new JButton("Test");
@@ -72,7 +71,7 @@ public class FoilMakerStarterGUI {
     JPanel main = new JPanel();
     JPanel leader = new JPanel();
     JLabel label2 = new JLabel("Others should use this key to join your game");
-    JTextArea gameKeyText = new JTextArea(gameToken);
+    JTextArea gameKeyText = new JTextArea(m.getGameToken());
     JPanel playerPanel = new JPanel();
     JTextArea playersInGame = new JTextArea();
     JButton startButton2 = new JButton("Start Game");
@@ -127,7 +126,7 @@ public class FoilMakerStarterGUI {
         panelFirst.setBackground(Color.cyan);
 
         answerPanel.add(answerTitle);
-        optionsNames = options; //Insert response from server
+        optionsNames = m.getOptions(); //Insert response from server
         JButton[] optionButtons = new JButton[optionsNames.length];
         for (int i =0; i < optionsNames.length; i++) {
             JButton btn = new JButton(optionsNames[i]);
@@ -147,9 +146,6 @@ public class FoilMakerStarterGUI {
         //Leader Gui Stuff
         gameKeyText.setEditable(false);
         playersInGame.setEditable(false);
-        for (int i = 0; i < players.length; i += 2) {
-            playersInGame.append(players[i] + "\n");
-        }
         playersInGame.setBackground(Color.pink);
         playersInGame.setFont(new Font("Comic Sans", Font.BOLD, 16));
 
@@ -162,6 +158,7 @@ public class FoilMakerStarterGUI {
         leader.add(gameKeyText);
         leader.add(playerPanel);
         leader.add(startButton2);
+
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -196,11 +193,10 @@ public class FoilMakerStarterGUI {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = enterUsername.getText();
+                m.setUsername(enterUsername.getText());
                 char[] charPassword = enterPassword.getPassword();
-                String password = String.valueOf(charPassword);
-                String serverMessage = s.login(username, password);
-                System.out.println(serverMessage);
+                m.setPassword(String.valueOf(charPassword));
+                String serverMessage = s.login(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
@@ -214,7 +210,7 @@ public class FoilMakerStarterGUI {
                     JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    userToken = r.getSessionCookie(serverMessage);
+                    m.setUserToken(r.getSessionCookie(serverMessage));
                     layout.show(mainPanel, "Start or Join");
                 }
             }
@@ -223,10 +219,10 @@ public class FoilMakerStarterGUI {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = enterUsername.getText();
+                m.setUsername(enterUsername.getText());
                 char[] charPassword = enterPassword.getPassword();
-                String password = String.valueOf(charPassword);
-                String serverMessage = s.register(username,password);
+                m.setPassword(String.valueOf(charPassword));
+                String serverMessage = s.register(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
                     JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
@@ -247,7 +243,7 @@ public class FoilMakerStarterGUI {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String serverMessage = s.startGame(userToken);
+                String serverMessage = s.startGame(m.getUserToken());
                 if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
                     JOptionPane.showMessageDialog(null,"Invalid user Token","Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -255,8 +251,9 @@ public class FoilMakerStarterGUI {
                     JOptionPane.showMessageDialog(null,"User already playing or server failed to create a game session due to an internal error","error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    gameToken = r.getGameToken(serverMessage);
-                    layout.show(mainPanel,"Enter Token");
+                    m.setGameToken(r.getGameToken(serverMessage));
+                    gameKeyText.setText(m.getGameToken());
+                    layout.show(mainPanel,"Leader");
                 }
             }
         });
@@ -264,9 +261,31 @@ public class FoilMakerStarterGUI {
         joinButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                s.joinGame(userToken,gameToken);
+                layout.show(mainPanel, "Enter Token");
             }
         } );
+
+        //Add action listener to Join game Button
+        joinGameToken.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String serverMessage = s.joinGame(m.getUserToken(),token.getText());
+                if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
+                    JOptionPane.showMessageDialog(null,"Invalid user token","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if (r.getCommandStatus(serverMessage).equals("GAMEKEYNOTFOUND")) {
+                    JOptionPane.showMessageDialog(null,"Invalid game toke","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else if (r.getCommandStatus(serverMessage).equals("FAILURE")) {
+                    JOptionPane.showMessageDialog(null,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    layout.show(mainPanel, "Waiting for leader");
+                    m.addPlayer(m.getUsername());
+                    m.incPlayersWaiting();
+                }
+            }
+        });
 
         //Add action listener to button 1 on panel first
         sendButton.addActionListener(new ActionListener() {
