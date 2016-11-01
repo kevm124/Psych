@@ -238,16 +238,16 @@ public class FoilMakerStarterGUI {
                 m.setPassword(String.valueOf(charPassword));
                 String serverMessage = s.login(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
-                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("UNKNOWNUSER")) {
-                    JOptionPane.showMessageDialog(null,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
-                    JOptionPane.showMessageDialog(null,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("USERALREADYLOGGEDIN")) {
-                    JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     m.setUserToken(r.getSessionCookie(serverMessage));
@@ -265,19 +265,19 @@ public class FoilMakerStarterGUI {
                 m.setPassword(String.valueOf(charPassword));
                 String serverMessage = s.register(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
-                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERNAME")) {
-                    JOptionPane.showMessageDialog(null,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
-                    JOptionPane.showMessageDialog(null,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("USERALREADYEXISTS")) {
-                    JOptionPane.showMessageDialog(null,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else
-                    JOptionPane.showMessageDialog(null, "User created successfully","Success",JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "User created successfully","Success",JOptionPane.PLAIN_MESSAGE);
             }
         });
         /*Start Game action Listener*/
@@ -319,13 +319,13 @@ public class FoilMakerStarterGUI {
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.joinGame(m.getUserToken(),token.getText());
                 if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
-                    JOptionPane.showMessageDialog(null,"Invalid user token","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid user token","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("GAMEKEYNOTFOUND")) {
-                    JOptionPane.showMessageDialog(null,"Invalid game toke","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid game toke","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("FAILURE")) {
-                    JOptionPane.showMessageDialog(null,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     layout.show(mainPanel, "Waiting for leader");
