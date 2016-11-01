@@ -12,6 +12,8 @@ public class FoilMakerModel {
     private String gameToken;
     private String userToken;
     private String[] options = {""};
+    private String startGameMessage;
+    private boolean leaderStartedGame = false;
 
     public String getUsername() {
         return username;
@@ -79,5 +81,19 @@ public class FoilMakerModel {
 
     public String[] getOptions() {
         return options;
+    }
+
+    public String getStartGameMessage() {
+        return startGameMessage;
+    }
+
+    public void setStartGameMessage(String startGameMessage) {
+        this.startGameMessage = startGameMessage;
+    }
+    public boolean getLeaderStartedGame() {
+        return leaderStartedGame;
+    }
+    public void setLeaderStartedGame(boolean leaderStartedGame) {
+        this.leaderStartedGame = leaderStartedGame;
     }
 }

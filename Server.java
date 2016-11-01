@@ -12,6 +12,7 @@ import java.net.Socket;
  * Created by Chris Nitta on 10/19/2016.
  */
 public class Server {
+    FoilMakerModel m = new FoilMakerModel();
     String serverIP = "localhost";
     int serverPort = 420;
     Socket socket;
@@ -79,14 +80,20 @@ public class Server {
         }
         return null;
     }
-    public static String allPlayersHaveJoined() {
-        return null;
-    }
-    public static String playerSuggestion() {
-        return null;
-    }
-    public static String playerChoice() {
+    public String startGame2(String userToken, String gameToken) {
+        try {
+            out.println("ALLPARTICIPANTSHAVEJOINED--" + userToken + "--" + gameToken);
+
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
+    public static void main(String[] args) {
+        FoilMakerStarterGUI game = new FoilMakerStarterGUI();
+        game.showGame();
+    }
 }

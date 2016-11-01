@@ -19,7 +19,6 @@ public class FoilMakerStarterGUI {
     ServerResponseReader r = new ServerResponseReader();
     JFrame frame = new JFrame();
     Server s = new Server();
-    JButton test = new JButton("Test");
 
     /*Main panel */
     JPanel mainPanel = new JPanel();
@@ -38,6 +37,7 @@ public class FoilMakerStarterGUI {
     JPanel startPanel = new JPanel();
     JButton joinButton = new JButton("Join Game");
     JButton startButton = new JButton("Start New Game");
+    JButton quitButton = new JButton("Quit");
 
     /*Waiting panel*/
     JPanel waitingPanel = new JPanel();
@@ -74,7 +74,7 @@ public class FoilMakerStarterGUI {
     JTextArea gameKeyText = new JTextArea(m.getGameToken());
     JPanel playerPanel = new JPanel();
     JTextArea playersInGame = new JTextArea();
-    JButton startButton2 = new JButton("Start Game");
+    JButton leaderStartButton = new JButton("Start");
 
     /*Results Panel*/
     JPanel resultsPanel = new JPanel();
@@ -93,7 +93,6 @@ public class FoilMakerStarterGUI {
         loginPanel.add(enterPassword);
         loginPanel.add(loginButton);
         loginPanel.add(registerButton);
-        loginPanel.add(test);
 
         /*Add Join Game and Start new game to panel2*/
         startPanel.add(joinButton);
@@ -114,6 +113,7 @@ public class FoilMakerStarterGUI {
         resultsPanel.add(overallResult);
         resultsPanel.add(givenOverallResults);
         resultsPanel.add(nextRound);
+        resultsPanel.add(quitButton);
 
         //Add elements to enter guess panel
         panelFirst.add(firstPanelHeader);
@@ -153,12 +153,12 @@ public class FoilMakerStarterGUI {
         playerPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Players in Game"));
         playerPanel.setBackground(Color.pink);
         playerPanel.setPreferredSize(new Dimension(300,300));
+        playerPanel.add(leaderStartButton);
+
 
         leader.add(label2);
         leader.add(gameKeyText);
         leader.add(playerPanel);
-        leader.add(startButton2);
-
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -183,8 +183,6 @@ public class FoilMakerStarterGUI {
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         layout.show(mainPanel, "Login or Register");
-        frame.setTitle("FoilMaker");
-        frame.setVisible(true);
 
         /**
          * Action Listeners
@@ -253,7 +251,7 @@ public class FoilMakerStarterGUI {
                 else {
                     m.setGameToken(r.getGameToken(serverMessage));
                     gameKeyText.setText(m.getGameToken());
-                    layout.show(mainPanel,"Leader");
+                    layout.show(mainPanel, "Leader");
                 }
             }
         });
@@ -264,6 +262,13 @@ public class FoilMakerStarterGUI {
                 layout.show(mainPanel, "Enter Token");
             }
         } );
+
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(420);
+            }
+        });
 
         //Add action listener to Join game Button
         joinGameToken.addActionListener(new ActionListener() {
@@ -281,12 +286,28 @@ public class FoilMakerStarterGUI {
                 }
                 else {
                     layout.show(mainPanel, "Waiting for leader");
-                    m.addPlayer(m.getUsername());
                     m.incPlayersWaiting();
+                    while (!m.getLeaderStartedGame()) {
+
+                    }
+                    layout.show(mainPanel,"Guess");
                 }
             }
         });
+        //Add action listener to start button on leader screen
+        leaderStartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String serverMessage = s.startGame2(m.getUserToken(),m.getGameToken());
+                m.setStartGameMessage(serverMessage);
+                while (serverMessage.equals("RESPONSE--ALLPARTICIPANTSHAVEJOINED--USERNOTLOGGEDIN") || serverMessage.equals("RESPONSE--ALLPARTICIPANTSHAVEJOINED--INVALIDGAMETOKEN") || serverMessage.equals("RESPONSE--ALLPARTICIPANTSHAVEJOINED--USERNOTGAMELEADER")) {
 
+                }
+                m.setLeaderStartedGame(true);
+                layout.show(mainPanel, "Guess");
+                System.out.println(m.getLeaderStartedGame());
+            }
+        });
         //Add action listener to button 1 on panel first
         sendButton.addActionListener(new ActionListener() {
             @Override
@@ -329,6 +350,16 @@ public class FoilMakerStarterGUI {
                     sendButton.setEnabled(true);
             }
         });
+    }
+    public void showGame() {
+        frame.setTitle("FoilMaker");
+        frame.setVisible(true);
+    }
+    public void changeToGame() {
+        while (!m.getLeaderStartedGame()) {
+
+        }
+        layout.show(mainPanel, "Guess");
     }
     public static String getResults() {
         return null;
