@@ -83,20 +83,62 @@ public class FoilMakerStarterGUI {
     JLabel overallResult = new JLabel("Overall Results: ");
     JLabel givenOverallResults = new JLabel(getOverallResults());
     JButton nextRound = new JButton("Next Round");
-
+    
+    Border blackLine = BorderFactory.createLineBorder(Color.black);
 
     public FoilMakerStarterGUI() {
+        frame.setSize(450,700);
         /*Add option to login and register to panel1*/
+        SpringLayout spring = new SpringLayout();
+        loginPanel.setLayout(spring);
+        loginPanel.setBackground(Color.pink);
+        mainTitle.setFont(new Font("Courier New", Font.ITALIC, 55));
+        mainTitle.setForeground(Color.white);
+        loginPanel.add(mainTitle);
+        username.setForeground(Color.white);
         loginPanel.add(username);
         loginPanel.add(enterUsername);
+        password.setForeground(Color.white);
         loginPanel.add(password);
         loginPanel.add(enterPassword);
+        loginButton.setPreferredSize(new Dimension(90,30));
         loginPanel.add(loginButton);
+        registerButton.setPreferredSize(new Dimension(90,30));
         loginPanel.add(registerButton);
 
+        spring.putConstraint(SpringLayout.NORTH, mainTitle, 75, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.HORIZONTAL_CENTER, mainTitle, 225, SpringLayout.WEST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, username, 250, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, username, -350, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, enterUsername, 250, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, enterUsername, -20, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, password, 275, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, password, -350, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, enterPassword, 275, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, enterPassword, -20, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, loginButton, 425, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, loginButton, 210, SpringLayout.WEST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, registerButton, 425, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, registerButton, -130, SpringLayout.EAST, loginPanel);
+
+        Timer t = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Random rand = new Random();
+                //loginPanel.setBackground(new Color(gen.nextInt(256), gen.nextInt(256), gen.nextInt(256)));
+                mainTitle.setForeground(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+            }
+        });
+        t.setRepeats(true);
+        t.start();
+
+
         /*Add Join Game and Start new game to panel2*/
-        startPanel.add(joinButton);
-        startPanel.add(startButton);
+        startPanel.setLayout(new BorderLayout());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(joinButton);
+        buttonPanel.add(startButton);
+        startPanel.add(buttonPanel, BorderLayout.NORTH);
 
         /*Add waiting to panel4*/
         waitingPanel.setLayout(new BorderLayout());
@@ -210,6 +252,7 @@ public class FoilMakerStarterGUI {
                 else {
                     m.setUserToken(r.getSessionCookie(serverMessage));
                     layout.show(mainPanel, "Start or Join");
+                    startPanel.setBorder(new TitledBorder(blackLine, m.getUsername()));
                 }
             }
         });
