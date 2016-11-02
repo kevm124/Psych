@@ -198,9 +198,13 @@ public class FoilMakerStarterGUI {
         playerPanel.add(leaderStartButton);
 
 
-        leader.add(label2);
-        leader.add(gameKeyText);
-        leader.add(playerPanel);
+        leader.setLayout(new BorderLayout());
+        JPanel leaderHeader = new JPanel();
+        leaderHeader.add(label2);
+        leaderHeader.add(gameKeyText);
+        leader.add(leaderHeader, BorderLayout.NORTH);
+        leader.add(playerPanel, BorderLayout.CENTER);
+        leader.add(startButton2, BorderLayout.SOUTH);
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -252,7 +256,14 @@ public class FoilMakerStarterGUI {
                 else {
                     m.setUserToken(r.getSessionCookie(serverMessage));
                     layout.show(mainPanel, "Start or Join");
-                    startPanel.setBorder(new TitledBorder(blackLine, m.getUsername()));
+                    TitledBorder titledBorder = new TitledBorder(blackLine, m.getUsername());
+                    startPanel.setBorder(titledBorder);
+                    waitingPanel.setBorder(titledBorder);
+                    enterTokenPanel.setBorder(titledBorder);
+                    panelFirst.setBorder(titledBorder);
+                    main.setBorder(titledBorder);
+                    answerPanel.setBorder(titledBorder);
+                    resultsPanel.setBorder(titledBorder);
                 }
             }
         });
