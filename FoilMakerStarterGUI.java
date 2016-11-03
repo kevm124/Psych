@@ -28,6 +28,7 @@ public class FoilMakerStarterGUI {
 
     /*Login or Register Panel*/
     JPanel loginPanel = new JPanel();
+    JLabel mainTitle = new JLabel("FoilMaker");
     JLabel username = new JLabel("Username: ");
     JTextField enterUsername = new JTextField(20);
     JLabel password = new JLabel("Password: ");
