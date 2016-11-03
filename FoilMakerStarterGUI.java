@@ -86,20 +86,61 @@ public class FoilMakerStarterGUI {
     JLabel overallResult = new JLabel("Overall Results: ");
     JLabel givenOverallResults = new JLabel(getOverallResults());
     JButton nextRound = new JButton("Next Round");
-
+    
+    Border blackLine = BorderFactory.createLineBorder(Color.black);
 
     public FoilMakerStarterGUI() {
+        frame.setSize(450,700);
         /*Add option to login and register to panel1*/
+        SpringLayout spring = new SpringLayout();
+        loginPanel.setLayout(spring);
+        loginPanel.setBackground(Color.pink);
+        mainTitle.setFont(new Font("Courier New", Font.ITALIC, 55));
+        mainTitle.setForeground(Color.white);
+        loginPanel.add(mainTitle);
+        username.setForeground(Color.white);
         loginPanel.add(username);
         loginPanel.add(enterUsername);
+        password.setForeground(Color.white);
         loginPanel.add(password);
         loginPanel.add(enterPassword);
+        loginButton.setPreferredSize(new Dimension(90,30));
         loginPanel.add(loginButton);
+        registerButton.setPreferredSize(new Dimension(90,30));
         loginPanel.add(registerButton);
 
-        /*Add Join Game and Start new game to panel2*/
-        startPanel.add(joinButton);
-        startPanel.add(startButton);
+        spring.putConstraint(SpringLayout.NORTH, mainTitle, 75, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.HORIZONTAL_CENTER, mainTitle, 225, SpringLayout.WEST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, username, 250, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, username, -350, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, enterUsername, 250, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, enterUsername, -20, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, password, 275, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, password, -350, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, enterPassword, 275, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, enterPassword, -20, SpringLayout.EAST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, loginButton, 425, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, loginButton, 210, SpringLayout.WEST, loginPanel);
+        spring.putConstraint(SpringLayout.NORTH, registerButton, 425, SpringLayout.NORTH, loginPanel);
+        spring.putConstraint(SpringLayout.EAST, registerButton, -130, SpringLayout.EAST, loginPanel);
+
+        Timer t = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Random rand = new Random();
+                //loginPanel.setBackground(new Color(gen.nextInt(256), gen.nextInt(256), gen.nextInt(256)));
+                mainTitle.setForeground(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+            }
+        });
+        t.setRepeats(true);
+        t.start();
+
+       /*Add Join Game and Start new game to panel2*/
+        startPanel.setLayout(new BorderLayout());
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.add(joinButton);
+        buttonPanel.add(startButton);
+        startPanel.add(buttonPanel, BorderLayout.NORTH);
 
         /*Add waiting to panel4*/
         waitingPanel.setLayout(new BorderLayout());
@@ -160,10 +201,13 @@ public class FoilMakerStarterGUI {
         playerPanel.setPreferredSize(new Dimension(300,300));
         playerPanel.add(leaderStartButton);
 
-
-        leader.add(label2);
-        leader.add(gameKeyText);
-        leader.add(playerPanel);
+        leader.setLayout(new BorderLayout());
+        JPanel leaderHeader = new JPanel();
+        leaderHeader.add(label2);
+        leaderHeader.add(gameKeyText);
+        leader.add(leaderHeader, BorderLayout.NORTH);
+        leader.add(playerPanel, BorderLayout.CENTER);
+        leader.add(startButton2, BorderLayout.SOUTH);
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -187,6 +231,7 @@ public class FoilMakerStarterGUI {
         frame.setResizable(false);
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
         layout.show(mainPanel, "Login or Register");
 
         /**
@@ -201,20 +246,28 @@ public class FoilMakerStarterGUI {
                 m.setPassword(String.valueOf(charPassword));
                 String serverMessage = s.login(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
-                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("UNKNOWNUSER")) {
-                    JOptionPane.showMessageDialog(null,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid Username","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
-                    JOptionPane.showMessageDialog(null,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid Password","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if(r.getCommandStatus(serverMessage).equals("USERALREADYLOGGEDIN")) {
-                    JOptionPane.showMessageDialog(null,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already logged in","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     m.setUserToken(r.getSessionCookie(serverMessage));
                     layout.show(mainPanel, "Start or Join");
+                    TitledBorder titledBorder = new TitledBorder(blackLine, m.getUsername());
+                    startPanel.setBorder(titledBorder);
+                    waitingPanel.setBorder(titledBorder);
+                    enterTokenPanel.setBorder(titledBorder);
+                    panelFirst.setBorder(titledBorder);
+                    main.setBorder(titledBorder);
+                    answerPanel.setBorder(titledBorder);
+                    resultsPanel.setBorder(titledBorder);
                 }
             }
         });
@@ -227,19 +280,19 @@ public class FoilMakerStarterGUI {
                 m.setPassword(String.valueOf(charPassword));
                 String serverMessage = s.register(m.getUsername(), m.getPassword());
                 if (r.getCommandStatus(serverMessage).equals("INVALIDMESSAGEFORMAT")) {
-                    JOptionPane.showMessageDialog(null,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Request does not comply with the format given above","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERNAME")) {
-                    JOptionPane.showMessageDialog(null,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Username empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("INVALIDUSERPASSWORD")) {
-                    JOptionPane.showMessageDialog(null,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Password empty","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("USERALREADYEXISTS")) {
-                    JOptionPane.showMessageDialog(null,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already exists","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else
-                    JOptionPane.showMessageDialog(null, "User created successfully","Success",JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "User created successfully","Success",JOptionPane.PLAIN_MESSAGE);
             }
         });
         /*Start Game action Listener*/
@@ -248,10 +301,10 @@ public class FoilMakerStarterGUI {
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.startGame(m.getUserToken());
                 if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
-                    JOptionPane.showMessageDialog(null,"Invalid user Token","Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid user Token","Error", JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("FAILURE")) {
-                    JOptionPane.showMessageDialog(null,"User already playing or server failed to create a game session due to an internal error","error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already playing or server failed to create a game session due to an internal error","error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     m.setGameToken(r.getGameToken(serverMessage));
@@ -282,13 +335,13 @@ public class FoilMakerStarterGUI {
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.joinGame(m.getUserToken(),token.getText());
                 if (r.getCommandStatus(serverMessage).equals("USERNOTLOGGEDIN")) {
-                    JOptionPane.showMessageDialog(null,"Invalid user token","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid user token","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("GAMEKEYNOTFOUND")) {
-                    JOptionPane.showMessageDialog(null,"Invalid game toke","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Invalid game toke","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else if (r.getCommandStatus(serverMessage).equals("FAILURE")) {
-                    JOptionPane.showMessageDialog(null,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     System.out.println(serverMessage);
