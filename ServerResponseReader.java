@@ -20,6 +20,7 @@ public class ServerResponseReader {
     * response message
      */
     public String getCommandStatus(String message){
+        message += "--";
         int commandSize = getCommand(message).length();
         return message.substring(message.indexOf('-', 10) + 2, message.indexOf('-', commandSize + 13));
     }
@@ -35,6 +36,9 @@ public class ServerResponseReader {
         gameWord[0] = message.substring(message.indexOf('-') + 2, message.indexOf('-', 3));
         gameWord[1] = message.substring(message.indexOf('-', 3) + 2);
         return gameWord;
+    }
+    public String getDefinition(String[] gameWord) {
+        return gameWord[1];
     }
     /*
     * Returns an array of Strings consisting of all the definition
@@ -125,11 +129,12 @@ public class ServerResponseReader {
         ServerResponseReader r = new ServerResponseReader();
         String username = "Chris";
         String password = "chris123";
-        String msg = "RESPONSE--CREATENEWUSER--INVALIDMESSAGEFORMAT--CREATENEWUSER--" + username + "--" + password;
+        String msg = "RESPONSE--PLAYERSUGGESTION--USERNOTLOGGEDIN";
         //"NEWPARTICIPANT--Alice--0";
         //"RESPONSE--STARTNEWGAME-SUCCESS--ypw";
         //"NEWGAMEWORD--A group of zebras--a dazzle";
         //"ROUNDOPTIONS--A zippy do--A zig zag--A dazzle";
-        System.out.println(r.getCommandStatus( msg));
+        System.out.println(r.getCommandStatus(msg));
+        System.out.println(r.getCommand(msg));
     }
 }

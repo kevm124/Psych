@@ -91,6 +91,26 @@ public class Server {
         }
         return null;
     }
+    public String suggest(String userToken, String gameToken, String suggestion) {
+        try {
+            out.println("PLAYERSUGGESTION--" + userToken + "--" + gameToken + "--" + suggestion);
+
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public String checkForGame() {
+        try {
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static void main(String[] args) {
         FoilMakerStarterGUI game = new FoilMakerStarterGUI();
