@@ -1,5 +1,6 @@
 package Psych;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.jetbrains.annotations.Contract;
 
 import javax.swing.*;
@@ -12,7 +13,6 @@ import java.net.Socket;
  * Created by Chris Nitta on 10/19/2016.
  */
 public class Server {
-    FoilMakerModel m = new FoilMakerModel();
     String serverIP = "localhost";
     int serverPort = 420;
     Socket socket;
@@ -102,7 +102,37 @@ public class Server {
         }
         return null;
     }
+    public String playerChoice(String userToken, String gameToken, String choice) {
+        try {
+            out.println("PLAYERCHOICE--" + userToken + "--" + gameToken + "--" + choice);
+
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public String checkForGame() {
+        try {
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String readFromServer() {
+        try {
+            String serverMessage = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public String getGameWord() {
         try {
             String serverMessage = in.readLine();
             return serverMessage;

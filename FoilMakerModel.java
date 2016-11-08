@@ -4,6 +4,8 @@ package Psych;
  * Created by Chris Nitta on 10/31/2016.
  */
 public class FoilMakerModel {
+    ServerResponseReader r = new ServerResponseReader();
+    Server s = new Server();
     final private int MAX_PLAYER_SIZE = 3;
     private String username;
     private String password;
@@ -96,4 +98,14 @@ public class FoilMakerModel {
     public void setLeaderStartedGame(boolean leaderStartedGame) {
         this.leaderStartedGame = leaderStartedGame;
     }
+    public String getDefinition() {
+        String gameWord = s.getGameWord();
+        if (gameWord.substring(0,11).equals("NEWGAMEWORD")) {
+            String defintion = r.getDefinition(r.getGameWord(gameWord));
+            return defintion;
+        }
+        else
+            return null;
+    }
+
 }

@@ -7,8 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Random;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -125,7 +127,7 @@ public class FoilMakerStarterGUI {
         spring.putConstraint(SpringLayout.NORTH, registerButton, 425, SpringLayout.NORTH, loginPanel);
         spring.putConstraint(SpringLayout.EAST, registerButton, -130, SpringLayout.EAST, loginPanel);
 
-        Timer t = new Timer(1000, new ActionListener() {
+        Timer t = new Timer(420, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Random rand = new Random();
@@ -173,19 +175,8 @@ public class FoilMakerStarterGUI {
         panelFirst.setBackground(Color.cyan);
 
         answerPanel.add(answerTitle);
-        optionsNames = m.getOptions(); //Insert response from server
-        JButton[] optionButtons = new JButton[optionsNames.length];
-        for (int i =0; i < optionsNames.length; i++) {
-            JButton btn = new JButton(optionsNames[i]);
-            btn.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    //..
-                }
-            });
-            optionPanel.add(btn);
-            optionButtons[i] = btn;
-        }
+        //Insert response from server
+
         answerPanel.add(optionPanel);
         answerPanel.add(buttonSecond);
         answerPanel.setBackground(Color.DARK_GRAY);
@@ -208,7 +199,7 @@ public class FoilMakerStarterGUI {
         leaderHeader.add(gameKeyText);
         leader.add(leaderHeader, BorderLayout.NORTH);
         leader.add(playerPanel, BorderLayout.CENTER);
-        leader.add(startButton2, BorderLayout.SOUTH);
+        leader.add(leaderStartButton, BorderLayout.SOUTH);
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -231,7 +222,7 @@ public class FoilMakerStarterGUI {
         frame.setMinimumSize(new Dimension(350,300));
         frame.setResizable(false);
 
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         layout.show(mainPanel, "Login or Register");
 
@@ -311,6 +302,31 @@ public class FoilMakerStarterGUI {
                     m.setGameToken(r.getGameToken(serverMessage));
                     gameKeyText.setText(m.getGameToken());
                     layout.show(mainPanel, "Leader");
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean dontStartGame = true;
+                            whileOuterLoop:
+                            while (dontStartGame == true) {
+                                String playerServerMessage = s.readFromServer();
+                                outerLoop:
+                                if (playerServerMessage.substring(0,14).equals("NEWPARTICIPANT")) {
+                                    String[] info = r.getNewParticipantInfo(playerServerMessage);
+                                    String player = info[0];
+                                    playersInGame.append(player + "\n");
+                                    m.incPlayersWaiting();
+                                    if (leaderStartButton.isSelected() || m.getPlayersWaiting() == m.getMAX_PLAYER_SIZE()) {
+                                        dontStartGame = false;
+                                    }
+                                    if (dontStartGame == false) {
+                                        break outerLoop;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    });
+                    t.start();
                 }
             }
         });
@@ -348,11 +364,14 @@ public class FoilMakerStarterGUI {
                     System.out.println(serverMessage);
                     layout.show(mainPanel, "Waiting for leader");
                     m.incPlayersWaiting();
+                    m.setGameToken(token.getText());
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
                             while (r.getCommandStatus(serverMessage).equals("SUCCESS")) {
-                                if (s.checkForGame().substring(0,11).equals("NEWGAMEWORD")) {
+                                String gameWord = s.checkForGame();
+                                if (gameWord.substring(0,11).equals("NEWGAMEWORD")) {
+                                    definitionText.setText(r.getDefinition(r.getGameWord(gameWord)));
                                     layout.show(mainPanel,"Guess");
                                     break;
                                 }
@@ -370,7 +389,6 @@ public class FoilMakerStarterGUI {
                 String serverMessage = s.startGame2(m.getUserToken(),m.getGameToken());
                 m.setStartGameMessage(serverMessage);
                 m.setLeaderStartedGame(true);
-                System.out.println(serverMessage);
                 layout.show(mainPanel, "Guess");
                 definitionText.setText(r.getDefinition(r.getGameWord(serverMessage)));
             }
@@ -380,16 +398,24 @@ public class FoilMakerStarterGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.suggest(m.getUserToken(),m.getGameToken(),guess.getText());
+                optionsNames = r.getRoundOptions(serverMessage);
+                JButton[] optionButtons = new JButton[optionsNames.length];
+                for (int i =0; i < optionsNames.length; i++) {
+                    JButton btn = new JButton(optionsNames[i]);
+                    btn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            s.playerChoice(m.getUserToken(),m.getGameToken(),btn.getText());
+                            layout.show(mainPanel, "Results");
+                        }
+                    });
+                    optionPanel.add(btn);
+                    optionButtons[i] = btn;
+                }
                 layout.show(mainPanel, "Answers");
             }
         });
 
-        buttonSecond.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //layout.show(mainPanel,"1");
-            }
-        });
         guess.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -433,12 +459,6 @@ public class FoilMakerStarterGUI {
     public void showGame() {
         frame.setTitle("FoilMaker");
         frame.setVisible(true);
-    }
-    public void changeToGame() {
-        while (!m.getLeaderStartedGame()) {
-
-        }
-        layout.show(mainPanel, "Guess");
     }
     public static String getResults() {
         return null;
