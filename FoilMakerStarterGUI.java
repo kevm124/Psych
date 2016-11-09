@@ -91,6 +91,7 @@ public class FoilMakerStarterGUI {
     JButton nextRound = new JButton("Next Round");
     
     Border blackLine = BorderFactory.createLineBorder(Color.black);
+    Color lightBlue = new Color(155,229,240);
 
     public FoilMakerStarterGUI() {
         frame.setSize(450,700);
@@ -151,10 +152,20 @@ public class FoilMakerStarterGUI {
         waitingPanel.add(waitingInfo,BorderLayout.PAGE_END);
         enter.setEnabled(false);
         waitingPanel.add(enter);
+        
         /*Add elements to Token Panel*/
+        SpringLayout springToken = new SpringLayout();
+        enterTokenPanel.setLayout(springToken);
         enterTokenPanel.add(enterToken);
         enterTokenPanel.add(token);
         enterTokenPanel.add(joinGameToken);
+
+        springToken.putConstraint(SpringLayout.NORTH, enterToken, 50, SpringLayout.NORTH, enterTokenPanel);
+        springToken.putConstraint(SpringLayout.HORIZONTAL_CENTER, enterToken, 225, SpringLayout.WEST, enterTokenPanel);
+        springToken.putConstraint(SpringLayout.NORTH, token, 110, SpringLayout.NORTH, enterTokenPanel);
+        springToken.putConstraint(SpringLayout.HORIZONTAL_CENTER, token, 225, SpringLayout.WEST, enterTokenPanel);
+        springToken.putConstraint(SpringLayout.SOUTH, joinGameToken, -50, SpringLayout.SOUTH, enterTokenPanel);
+        springToken.putConstraint(SpringLayout.HORIZONTAL_CENTER, joinGameToken, 225, SpringLayout.WEST, enterTokenPanel);
 
         /*Add elements to Results Panel*/
         resultsPanel.add(roundResult);
@@ -165,6 +176,7 @@ public class FoilMakerStarterGUI {
         resultsPanel.add(quitButton);
 
         //Add elements to enter guess panel
+        SpringLayout springGuess = new SpringLayout();
         panelFirst.add(firstPanelHeader);
         wordPanel.add(definitionText);
         panelFirst.add(wordPanel);
@@ -173,13 +185,26 @@ public class FoilMakerStarterGUI {
         panelFirst.add(sendButton);
         sendButton.setEnabled(false);
         panelFirst.setBackground(Color.cyan);
+        
+        springGuess.putConstraint(SpringLayout.NORTH, firstPanelHeader, 40, SpringLayout.NORTH, panelFirst);
+        springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, firstPanelHeader, 225, SpringLayout.WEST, panelFirst);
+        springGuess.putConstraint(SpringLayout.NORTH, wordPanel, 120, SpringLayout.NORTH, panelFirst);
+        springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, wordPanel, 225, SpringLayout.WEST, panelFirst);
+        springGuess.putConstraint(SpringLayout.NORTH, guessPanel, 225, SpringLayout.NORTH, panelFirst);
+        springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, guessPanel, 225, SpringLayout.WEST, panelFirst);
+        springGuess.putConstraint(SpringLayout.SOUTH, sendButton, -50, SpringLayout.SOUTH, panelFirst);
+        springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, sendButton, 225, SpringLayout.WEST, panelFirst);
 
-        answerPanel.add(answerTitle);
+        answerPanel.setLayout(new BorderLayout());
+        answerTitle.setForeground(Color.white);
+        answerTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        answerPanel.add(answerTitle, BorderLayout.NORTH);
+        optionPanel.setBackground(Color.LIGHT_GRAY);
         //Insert response from server
 
-        answerPanel.add(optionPanel);
+        answerPanel.add(optionPanel, BorderLayout.CENTER);
         answerPanel.add(buttonSecond);
-        answerPanel.setBackground(Color.DARK_GRAY);
+        answerPanel.setBackground(Color.LIGHT_GRAY);
 
         //Leader Gui Stuff
         gameKeyText.setEditable(false);
