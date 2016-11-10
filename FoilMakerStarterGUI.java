@@ -85,9 +85,9 @@ public class FoilMakerStarterGUI {
     /*Results Panel*/
     JPanel resultsPanel = new JPanel();
     JLabel roundResult = new JLabel("Round Result: ");
-    JLabel givenRoundResults = new JLabel(getResults());
+    JLabel givenRoundResults = new JLabel();
     JLabel overallResult = new JLabel("Overall Results: ");
-    JLabel givenOverallResults = new JLabel(getOverallResults());
+    JLabel givenOverallResults = new JLabel();
     JButton nextRound = new JButton("Next Round");
     
     Border blackLine = BorderFactory.createLineBorder(Color.black);
@@ -98,7 +98,7 @@ public class FoilMakerStarterGUI {
         /*Add option to login and register to panel1*/
         SpringLayout spring = new SpringLayout();
         loginPanel.setLayout(spring);
-        loginPanel.setBackground(Color.pink);
+        loginPanel.setBackground(lightBlue);
         mainTitle.setFont(new Font("Courier New", Font.ITALIC, 55));
         mainTitle.setForeground(Color.white);
         loginPanel.add(mainTitle);
@@ -152,7 +152,6 @@ public class FoilMakerStarterGUI {
         waitingPanel.add(waitingInfo,BorderLayout.PAGE_END);
         enter.setEnabled(false);
         waitingPanel.add(enter);
-        
         /*Add elements to Token Panel*/
         SpringLayout springToken = new SpringLayout();
         enterTokenPanel.setLayout(springToken);
@@ -184,8 +183,8 @@ public class FoilMakerStarterGUI {
         panelFirst.add(guessPanel);
         panelFirst.add(sendButton);
         sendButton.setEnabled(false);
-        panelFirst.setBackground(Color.cyan);
-        
+        panelFirst.setBackground(lightBlue);
+
         springGuess.putConstraint(SpringLayout.NORTH, firstPanelHeader, 40, SpringLayout.NORTH, panelFirst);
         springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, firstPanelHeader, 225, SpringLayout.WEST, panelFirst);
         springGuess.putConstraint(SpringLayout.NORTH, wordPanel, 120, SpringLayout.NORTH, panelFirst);
@@ -196,15 +195,15 @@ public class FoilMakerStarterGUI {
         springGuess.putConstraint(SpringLayout.HORIZONTAL_CENTER, sendButton, 225, SpringLayout.WEST, panelFirst);
 
         answerPanel.setLayout(new BorderLayout());
-        answerTitle.setForeground(Color.white);
+        answerTitle.setForeground(Color.WHITE);
         answerTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        answerPanel.add(answerTitle, BorderLayout.NORTH);
+        answerPanel.add(answerTitle,BorderLayout.NORTH);
         optionPanel.setBackground(Color.LIGHT_GRAY);
         //Insert response from server
 
-        answerPanel.add(optionPanel, BorderLayout.CENTER);
+        answerPanel.add(optionPanel);
         answerPanel.add(buttonSecond);
-        answerPanel.setBackground(Color.LIGHT_GRAY);
+        answerPanel.setBackground(Color.DARK_GRAY);
 
         //Leader Gui Stuff
         gameKeyText.setEditable(false);
@@ -330,21 +329,19 @@ public class FoilMakerStarterGUI {
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            boolean dontStartGame = true;
                             whileOuterLoop:
-                            while (dontStartGame == true) {
+                            while (true) {
                                 String playerServerMessage = s.readFromServer();
-                                outerLoop:
+                                System.out.println(playerServerMessage);
                                 if (playerServerMessage.substring(0,14).equals("NEWPARTICIPANT")) {
                                     String[] info = r.getNewParticipantInfo(playerServerMessage);
                                     String player = info[0];
                                     playersInGame.append(player + "\n");
                                     m.incPlayersWaiting();
-                                    if (leaderStartButton.isSelected() || m.getPlayersWaiting() == m.getMAX_PLAYER_SIZE()) {
-                                        dontStartGame = false;
-                                    }
-                                    if (dontStartGame == false) {
-                                        break outerLoop;
+                                    System.out.println(m.getMAX_PLAYER_SIZE());
+                                    System.out.println(m.getPlayersWaiting());
+                                    if ( m.getPlayersWaiting() == m.getMAX_PLAYER_SIZE()) {
+                                        break whileOuterLoop;
                                     }
                                 }
                                 break;
@@ -386,7 +383,6 @@ public class FoilMakerStarterGUI {
                     JOptionPane.showMessageDialog(frame,"User already playing the game","Error",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    System.out.println(serverMessage);
                     layout.show(mainPanel, "Waiting for leader");
                     m.incPlayersWaiting();
                     m.setGameToken(token.getText());
@@ -430,7 +426,9 @@ public class FoilMakerStarterGUI {
                     btn.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            s.playerChoice(m.getUserToken(),m.getGameToken(),btn.getText());
+                            String results = s.playerChoice(m.getUserToken(),m.getGameToken(),btn.getText());
+                            System.out.println(results);
+                            String[] result = r.getRoundResults(results);
                             layout.show(mainPanel, "Results");
                         }
                     });
@@ -484,14 +482,5 @@ public class FoilMakerStarterGUI {
     public void showGame() {
         frame.setTitle("FoilMaker");
         frame.setVisible(true);
-    }
-    public static String getResults() {
-        return null;
-    }
-    public static String getOverallResults() {
-        return null;
-    }
-    public static void main(String[] args) {
-        new FoilMakerStarterGUI();
     }
 }

@@ -132,6 +132,16 @@ public class Server {
         }
         return null;
     }
+    public String getRoundResults() {
+        try {
+            String serverMessage = in.readLine();
+            String serverMessage2 = in.readLine();
+            return serverMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public String getGameWord() {
         try {
             String serverMessage = in.readLine();
