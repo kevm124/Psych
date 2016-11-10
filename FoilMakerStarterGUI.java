@@ -144,7 +144,7 @@ public class FoilMakerStarterGUI {
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.add(joinButton);
         buttonPanel.add(startButton);
-        startPanel.add(buttonPanel, BorderLayout.NORTH);
+        startPanel.add(buttonPanel, BorderLayout.CENTER);
 
         /*Add waiting to panel4*/
         waitingPanel.setLayout(new BorderLayout());
