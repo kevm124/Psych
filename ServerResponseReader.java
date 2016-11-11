@@ -1,4 +1,3 @@
-package Psych;
 import java.util.ArrayList;
 
 /*
