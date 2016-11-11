@@ -16,6 +16,33 @@ public class FoilMakerModel {
     private String[] options = {""};
     private String startGameMessage;
     private boolean leaderStartedGame = false;
+    private String score;
+    private String playersFooled;
+    private String timesFooled;
+
+    public void setPlayersFooled(String playersFooled) {
+        this.playersFooled = playersFooled;
+    }
+
+    public String getPlayersFooled() {
+        return playersFooled;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setTimesFooled(String timesFooled) {
+        this.timesFooled = timesFooled;
+    }
+
+    public String getTimesFooled() {
+        return timesFooled;
+    }
 
     public String getUsername() {
         return username;

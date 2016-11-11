@@ -339,7 +339,6 @@ public class FoilMakerStarterGUI {
                                         break whileOuterLoop;
                                     }
                                 }
-                                break;
                             }
                         }
                     });
@@ -422,27 +421,26 @@ public class FoilMakerStarterGUI {
                     btn.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            String results = s.playerChoice(m.getUserToken(),m.getGameToken(),btn.getText());
+                            String results = s.playerChoice(m.getUserToken(), m.getGameToken(), btn.getText());
                             String[] result = r.getRoundResults(results);
-                            if (m.getUsername().equals(result[0])) {
-                                givenRoundResults.setText(m.getUsername() + "-> Score: " + result[2] + " | Fooled: " + result[3] + " Player(s) Fooled by: " + result[4] + " Player(s)");
+                            System.out.println(result[0]);
+                            System.out.println(result.length);
+                            if (result[0].equals(m.getUsername())) {
+                                givenRoundResults.setText(result[1]);
                             }
-                            if (m.getUsername().equals(result[5])) {
-                                givenRoundResults.setText(m.getUsername() + "-> Score: " + result[7] + " | Fooled: " + result[8] + " Player(s) Fooled by: " + result[9] + " Player(s)");
+                            if (result[5].equals(m.getUsername())) {
+                                givenRoundResults.setText(result[6]);
                             }
-                            /*
-                            if (m.getUsername().equals(result[10])) {
-                                System.out.println(m.getUsername() + "-> Score: " + result[12] + " | Fooled: " + result[13] + " Player(s) Fooled by: " + result[14] + " Player(s)");
+                            if (result[10].equals(m.getUsername())) {
+                                givenRoundResults.setText(result[11]);
                             }
-                            if (m.getUsername().equals(result[15])) {
-                                System.out.println(m.getUsername() + "-> Score: " + result[17] + " | Fooled: " + result[18] + " Player(s) Fooled by: " + result[19] + " Player(s)");
-                            } */
-                            givenOverallResults.setText(m.getUsername() + "-> Score: " + result[2] + " | Fooled: " + result[3] + " Player(s) Fooled by: " + result[4] + " Player(s)\n " +
-                                    m.getUsername() + "-> Score: " + result[7] + " | Fooled: " + result[8] + " Player(s) Fooled by: " + result[9] + " Player(s)\n" /*+
-                                    m.getUsername() + "-> Score: " + result[12] + " | Fooled: " + result[13] + " Player(s) Fooled by: " + result[14] + " Player(s)\n" +
-                                    m.getUsername() + "-> Score: " + result[17] + " | Fooled: " + result[18] + " Player(s) Fooled by: " + result[19] + " Player(s)" */
-                            );
-
+                            if (result[15].equals(m.getUsername())) {
+                                givenRoundResults.setText(result[18]);
+                            }
+                            givenOverallResults.setText(result[0] + "-> Score: " + result[2] + " Fooled: " + result[3] + " Fooled by " + result[4] + "\n" +
+                                    result[5] + "-> Score: " + result[7] + " Fooled: " + result[8] + " Fooled by " + result[9] + "\n" +
+                                    result[10] + "-> Score: " + result[12] + " Fooled: " + result[13] + " Fooled by " + result[14] + "\n" +
+                                    result[15] + "-> Score: " + result[17] + " Fooled: " + result[18] + " Fooled by " + result[19]);
                             layout.show(mainPanel, "Results");
                         }
                     });
