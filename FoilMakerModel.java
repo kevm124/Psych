@@ -1,8 +1,3 @@
-package Psych;
-
-/**
- * Created by Chris Nitta on 10/31/2016.
- */
 public class FoilMakerModel {
     ServerResponseReader r = new ServerResponseReader();
     Server s = new Server();
