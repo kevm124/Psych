@@ -38,7 +38,7 @@ public class ServerResponseReader {
         return gameWord;
     }
     public String getDefinition(String[] gameWord) {
-        return gameWord[1];
+        return gameWord[0];
     }
     /*
     * Returns an array of Strings consisting of all the definition

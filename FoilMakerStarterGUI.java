@@ -70,7 +70,6 @@ public class FoilMakerStarterGUI {
     JPanel answerPanel = new JPanel();
     JPanel optionPanel = new JPanel();
     String[] optionsNames;
-    JButton buttonSecond = new JButton("Send Guess");
     String answer;
 
     //Leader Gui
@@ -202,7 +201,6 @@ public class FoilMakerStarterGUI {
         //Insert response from server
 
         answerPanel.add(optionPanel);
-        answerPanel.add(buttonSecond);
         answerPanel.setBackground(Color.DARK_GRAY);
 
         //Leader Gui Stuff
@@ -332,14 +330,11 @@ public class FoilMakerStarterGUI {
                             whileOuterLoop:
                             while (true) {
                                 String playerServerMessage = s.readFromServer();
-                                System.out.println(playerServerMessage);
                                 if (playerServerMessage.substring(0,14).equals("NEWPARTICIPANT")) {
                                     String[] info = r.getNewParticipantInfo(playerServerMessage);
                                     String player = info[0];
                                     playersInGame.append(player + "\n");
                                     m.incPlayersWaiting();
-                                    System.out.println(m.getMAX_PLAYER_SIZE());
-                                    System.out.println(m.getPlayersWaiting());
                                     if ( m.getPlayersWaiting() == m.getMAX_PLAYER_SIZE()) {
                                         break whileOuterLoop;
                                     }
@@ -420,6 +415,7 @@ public class FoilMakerStarterGUI {
             public void actionPerformed(ActionEvent e) {
                 String serverMessage = s.suggest(m.getUserToken(),m.getGameToken(),guess.getText());
                 optionsNames = r.getRoundOptions(serverMessage);
+                optionPanel.removeAll();
                 JButton[] optionButtons = new JButton[optionsNames.length];
                 for (int i =0; i < optionsNames.length; i++) {
                     JButton btn = new JButton(optionsNames[i]);
@@ -427,8 +423,26 @@ public class FoilMakerStarterGUI {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             String results = s.playerChoice(m.getUserToken(),m.getGameToken(),btn.getText());
-                            System.out.println(results);
                             String[] result = r.getRoundResults(results);
+                            if (m.getUsername().equals(result[0])) {
+                                givenRoundResults.setText(m.getUsername() + "-> Score: " + result[2] + " | Fooled: " + result[3] + " Player(s) Fooled by: " + result[4] + " Player(s)");
+                            }
+                            if (m.getUsername().equals(result[5])) {
+                                givenRoundResults.setText(m.getUsername() + "-> Score: " + result[7] + " | Fooled: " + result[8] + " Player(s) Fooled by: " + result[9] + " Player(s)");
+                            }
+                            /*
+                            if (m.getUsername().equals(result[10])) {
+                                System.out.println(m.getUsername() + "-> Score: " + result[12] + " | Fooled: " + result[13] + " Player(s) Fooled by: " + result[14] + " Player(s)");
+                            }
+                            if (m.getUsername().equals(result[15])) {
+                                System.out.println(m.getUsername() + "-> Score: " + result[17] + " | Fooled: " + result[18] + " Player(s) Fooled by: " + result[19] + " Player(s)");
+                            } */
+                            givenOverallResults.setText(m.getUsername() + "-> Score: " + result[2] + " | Fooled: " + result[3] + " Player(s) Fooled by: " + result[4] + " Player(s)\n " +
+                                    m.getUsername() + "-> Score: " + result[7] + " | Fooled: " + result[8] + " Player(s) Fooled by: " + result[9] + " Player(s)\n" /*+
+                                    m.getUsername() + "-> Score: " + result[12] + " | Fooled: " + result[13] + " Player(s) Fooled by: " + result[14] + " Player(s)\n" +
+                                    m.getUsername() + "-> Score: " + result[17] + " | Fooled: " + result[18] + " Player(s) Fooled by: " + result[19] + " Player(s)" */
+                            );
+
                             layout.show(mainPanel, "Results");
                         }
                     });
@@ -476,6 +490,15 @@ public class FoilMakerStarterGUI {
                         layout.show(mainPanel, "Guess");
                     }
                 }
+            }
+        });
+        nextRound.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                guess.setText("");
+                String newWord = s.readFromServer();
+                definitionText.setText(r.getDefinition(r.getGameWord(newWord)));
+                layout.show(mainPanel, "Guess");
             }
         });
     }

@@ -37,10 +37,10 @@ public class FoilMakerModel {
         return players;
     }
 
-    public void addPlayer(String players) {
+    public void addPlayer(String player) {
         for (int i = 0; i < 4; i++) {
             if (this.players[i].isEmpty()) {
-                this.players[i] = players;
+                this.players[i] = player;
             }
         }
     }
