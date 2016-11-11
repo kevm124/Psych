@@ -1,5 +1,3 @@
-package Psych;
-
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.jetbrains.annotations.Contract;
 
@@ -9,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-/**
- * Created by Chris Nitta on 10/19/2016.
- */
+
 public class Server {
     String serverIP = "localhost";
     int serverPort = 420;
