@@ -1,5 +1,3 @@
-package Psych;
-
 import jdk.nashorn.internal.scripts.JO;
 
 import java.awt.*;
@@ -13,10 +11,6 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-/**
- * Created by Chris Nitta on 10/19/2016.
- */
 
 public class FoilMakerStarterGUI {
     FoilMakerModel m = new FoilMakerModel();
@@ -39,6 +33,8 @@ public class FoilMakerStarterGUI {
     JButton registerButton = new JButton("Register");
 
     /*Join or Start New Game Panel*/
+    JLabel secondTitle = new JLabel("FoilMaker");
+    JLabel welcomeText = new JLabel("Welcome to");
     JPanel startPanel = new JPanel();
     JButton joinButton = new JButton("Join Game");
     JButton startButton = new JButton("Start New Game");
@@ -48,7 +44,7 @@ public class FoilMakerStarterGUI {
     JPanel waitingPanel = new JPanel();
     JLabel waiting = new JLabel("Waiting for leader ... ");
     JLabel waitingInfo = new JLabel("Joined game: waiting for leader.");
-    JButton enter = new JButton("Enter Game");
+    JButton enter = new JButton("Waiting On Leader");
 
     /*Join game with token panel*/
     JPanel enterTokenPanel = new JPanel();
@@ -66,10 +62,11 @@ public class FoilMakerStarterGUI {
     JButton sendButton = new JButton("Submit");
 
     //Second Panel where user selects guess
-    JLabel answerTitle = new JLabel();
+    JLabel answerTitle = new JLabel("Select Your Guess");
     JPanel answerPanel = new JPanel();
     JPanel optionPanel = new JPanel();
     String[] optionsNames;
+    //JButton buttonSecond = new JButton("Send Guess");
     String answer;
 
     //Leader Gui
@@ -86,10 +83,10 @@ public class FoilMakerStarterGUI {
     JLabel roundResult = new JLabel("Round Result: ");
     JLabel givenRoundResults = new JLabel();
     JLabel overallResult = new JLabel("Overall Results: ");
-    JLabel givenOverallResults = new JLabel();
+    JTextArea givenOverallResults = new JTextArea();
     JButton nextRound = new JButton("Next Round");
-    
-    Border blackLine = BorderFactory.createLineBorder(Color.black);
+
+    Border whiteLine = BorderFactory.createLineBorder(Color.white);
     Color lightBlue = new Color(155,229,240);
 
     public FoilMakerStarterGUI() {
@@ -98,7 +95,7 @@ public class FoilMakerStarterGUI {
         SpringLayout spring = new SpringLayout();
         loginPanel.setLayout(spring);
         loginPanel.setBackground(lightBlue);
-        mainTitle.setFont(new Font("Courier New", Font.ITALIC, 55));
+        mainTitle.setFont(new Font("Courier New", Font.BOLD, 55));
         mainTitle.setForeground(Color.white);
         loginPanel.add(mainTitle);
         username.setForeground(Color.white);
@@ -131,7 +128,7 @@ public class FoilMakerStarterGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Random rand = new Random();
-                //loginPanel.setBackground(new Color(gen.nextInt(256), gen.nextInt(256), gen.nextInt(256)));
+                secondTitle.setForeground(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
                 mainTitle.setForeground(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
             }
         });
@@ -141,8 +138,19 @@ public class FoilMakerStarterGUI {
        /*Add Join Game and Start new game to panel2*/
         startPanel.setLayout(new BorderLayout());
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        JPanel titlePanel = new JPanel(new BorderLayout());
         buttonPanel.add(joinButton);
         buttonPanel.add(startButton);
+        buttonPanel.setBackground(lightBlue);
+        startPanel.setBackground(lightBlue);
+        titlePanel.setBackground(lightBlue);
+        secondTitle.setFont(new Font("Courier New", Font.BOLD, 65));
+        secondTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeText.setFont(new Font("Times Roman", Font.ITALIC, 15));
+        welcomeText.setForeground(Color.DARK_GRAY);
+        titlePanel.add(welcomeText, BorderLayout.PAGE_START);
+        titlePanel.add(secondTitle, BorderLayout.AFTER_LAST_LINE);
+        startPanel.add(titlePanel, BorderLayout.NORTH);
         startPanel.add(buttonPanel, BorderLayout.CENTER);
 
         /*Add waiting to panel4*/
@@ -150,13 +158,18 @@ public class FoilMakerStarterGUI {
         waitingPanel.add(waiting, BorderLayout.CENTER );
         waitingPanel.add(waitingInfo,BorderLayout.PAGE_END);
         enter.setEnabled(false);
+        enter.setBackground(lightBlue);
+        enter.setForeground(Color.white);
         waitingPanel.add(enter);
+        waitingPanel.setBackground(lightBlue);
+
         /*Add elements to Token Panel*/
         SpringLayout springToken = new SpringLayout();
         enterTokenPanel.setLayout(springToken);
         enterTokenPanel.add(enterToken);
         enterTokenPanel.add(token);
         enterTokenPanel.add(joinGameToken);
+        enterTokenPanel.setBackground(lightBlue);
 
         springToken.putConstraint(SpringLayout.NORTH, enterToken, 50, SpringLayout.NORTH, enterTokenPanel);
         springToken.putConstraint(SpringLayout.HORIZONTAL_CENTER, enterToken, 225, SpringLayout.WEST, enterTokenPanel);
@@ -166,19 +179,29 @@ public class FoilMakerStarterGUI {
         springToken.putConstraint(SpringLayout.HORIZONTAL_CENTER, joinGameToken, 225, SpringLayout.WEST, enterTokenPanel);
 
         /*Add elements to Results Panel*/
-        resultsPanel.add(roundResult);
-        resultsPanel.add(givenRoundResults);
-        resultsPanel.add(overallResult);
-        resultsPanel.add(givenOverallResults);
-        resultsPanel.add(nextRound);
-        resultsPanel.add(quitButton);
+        resultsPanel.setLayout(new BorderLayout());
+        JPanel resultButtonPanel = new JPanel();
+        JPanel playerResultsPanel = new JPanel();
+        JPanel overallResultsPanel = new JPanel(new BorderLayout());
+        playerResultsPanel.add(roundResult);
+        playerResultsPanel.add(givenRoundResults);
+        overallResultsPanel.add(overallResult, BorderLayout.NORTH);
+        overallResultsPanel.add(givenOverallResults, BorderLayout.CENTER);
+        givenOverallResults.setEditable(false);
+        resultButtonPanel.add(nextRound);
+        resultButtonPanel.add(quitButton);
+        resultsPanel.add(playerResultsPanel, BorderLayout.NORTH);
+        resultsPanel.add(overallResultsPanel, BorderLayout.CENTER);
+        resultsPanel.add(resultButtonPanel, BorderLayout.SOUTH);
 
         //Add elements to enter guess panel
         SpringLayout springGuess = new SpringLayout();
+        panelFirst.setLayout(springGuess);
         panelFirst.add(firstPanelHeader);
         wordPanel.add(definitionText);
         panelFirst.add(wordPanel);
         guessPanel.add(guess);
+        guessPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Enter your guess"));
         panelFirst.add(guessPanel);
         panelFirst.add(sendButton);
         sendButton.setEnabled(false);
@@ -197,21 +220,24 @@ public class FoilMakerStarterGUI {
         answerTitle.setForeground(Color.WHITE);
         answerTitle.setHorizontalAlignment(SwingConstants.CENTER);
         answerPanel.add(answerTitle,BorderLayout.NORTH);
-        optionPanel.setBackground(Color.LIGHT_GRAY);
+        optionPanel.setBackground(Color.darkGray);
+        optionPanel.setLayout(new GridLayout(0,1));
         //Insert response from server
 
-        answerPanel.add(optionPanel);
-        answerPanel.setBackground(Color.DARK_GRAY);
+        answerPanel.add(optionPanel, BorderLayout.CENTER);
+        //answerPanel.add(buttonSecond);
+        answerPanel.setBackground(Color.darkGray);
 
         //Leader Gui Stuff
+        main.setBackground(lightBlue);
         gameKeyText.setEditable(false);
         playersInGame.setEditable(false);
-        playersInGame.setBackground(Color.pink);
-        playersInGame.setFont(new Font("Comic Sans", Font.BOLD, 16));
+        playersInGame.setBackground(new Color(61, 141, 153));
+        playersInGame.setFont(new Font("Comic Sans", Font.BOLD, 20));
 
         playerPanel.add(playersInGame);
         playerPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Players in Game"));
-        playerPanel.setBackground(Color.pink);
+        playerPanel.setBackground(new Color(61, 141, 153));
         playerPanel.setPreferredSize(new Dimension(300,300));
         playerPanel.add(leaderStartButton);
 
@@ -219,9 +245,11 @@ public class FoilMakerStarterGUI {
         JPanel leaderHeader = new JPanel();
         leaderHeader.add(label2);
         leaderHeader.add(gameKeyText);
+        leaderHeader.setBackground(lightBlue);
         leader.add(leaderHeader, BorderLayout.NORTH);
         leader.add(playerPanel, BorderLayout.CENTER);
         leader.add(leaderStartButton, BorderLayout.SOUTH);
+
 
         main.setLayout(layout);
         main.add(leader, "1");
@@ -274,7 +302,8 @@ public class FoilMakerStarterGUI {
                 else {
                     m.setUserToken(r.getSessionCookie(serverMessage));
                     layout.show(mainPanel, "Start or Join");
-                    TitledBorder titledBorder = new TitledBorder(blackLine, m.getUsername());
+                    TitledBorder titledBorder = new TitledBorder(whiteLine, m.getUsername());
+                    titledBorder.setTitleColor(Color.white);
                     startPanel.setBorder(titledBorder);
                     waitingPanel.setBorder(titledBorder);
                     enterTokenPanel.setBorder(titledBorder);
@@ -423,8 +452,6 @@ public class FoilMakerStarterGUI {
                         public void actionPerformed(ActionEvent e) {
                             String results = s.playerChoice(m.getUserToken(), m.getGameToken(), btn.getText());
                             String[] result = r.getRoundResults(results);
-                            System.out.println(result[0]);
-                            System.out.println(result.length);
                             if (result[0].equals(m.getUsername())) {
                                 givenRoundResults.setText(result[1]);
                             }
@@ -435,7 +462,7 @@ public class FoilMakerStarterGUI {
                                 givenRoundResults.setText(result[11]);
                             }
                             if (result[15].equals(m.getUsername())) {
-                                givenRoundResults.setText(result[18]);
+                                givenRoundResults.setText(result[16]);
                             }
                             givenOverallResults.setText(result[0] + "-> Score: " + result[2] + " Fooled: " + result[3] + " Fooled by " + result[4] + "\n" +
                                     result[5] + "-> Score: " + result[7] + " Fooled: " + result[8] + " Fooled by " + result[9] + "\n" +
@@ -451,6 +478,7 @@ public class FoilMakerStarterGUI {
             }
         });
 
+        //Action listener to disable send guess button if no text
         guess.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
